@@ -1,12 +1,15 @@
+import defaultTheme from "tailwindcss/defaultTheme";
 import forms from "@tailwindcss/forms";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-    content: [
-        "./resources/**/*.blade.php",
-    ],
+    content: ["./resources/**/*.blade.php"],
     theme: {
-        extend: {},
+        extend: {
+            fontFamily: {
+                sans: ["Figtree", ...defaultTheme.fontFamily.sans],
+            },
+        },
     },
     plugins: [forms],
 };
