@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\RegisterNewUser;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -24,15 +26,17 @@ class RegisterController extends Controller
      * Create a new user
      * 
      * @param \App\Http\Requests\RegisterRequest $request
+     * @param \App\Actions\RegisterNewUser $action
+     * 
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function store(RegisterRequest $request): RedirectResponse
+    public function store(RegisterRequest $request, RegisterNewUser $action): RedirectResponse
     {
-        DB::transaction(
-            callback: function () use ($request) {
-                User::create($request->validated());
-            }
-        );
+        // Because its bad practice to perform database operations in the controller
+        // We will use the action class to create a new user
+        $user = $action->create($request->validated());
+
+        event(new Registered($user));
 
         return back()->with('success', 'Registration successful');
     }
